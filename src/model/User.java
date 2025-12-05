@@ -1,16 +1,14 @@
 package model;
 
-import java.sql.Date;
-
 public class User {
 	int id;
 	String name;
 	String email;
 	String password;
 	String gender;
-	Date dob;
+	String dob;
 	String role;
-	public User(int id, String name, String email, String password, String gender, Date dob, String role) {
+	public User(int id, String name, String email, String password, String gender, String dob, String role) {
 		super();
 		this.id = id;
 		this.name = name;
@@ -50,10 +48,10 @@ public class User {
 	public void setGender(String gender) {
 		this.gender = gender;
 	}
-	public Date getDob() {
+	public String getDob() {
 		return dob;
 	}
-	public void setDob(Date dob) {
+	public void setDob(String dob) {
 		this.dob = dob;
 	}
 	public String getRole() {
