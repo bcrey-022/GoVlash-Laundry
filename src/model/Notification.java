@@ -1,12 +1,12 @@
 package model;
 
 public class Notification {
-	int notifId;
-	int customerId;
-	String message;
-	boolean status;
-	String createdTime;
-	public Notification(int notifId, int customerId, String message, boolean status, String createdTime) {
+	private int notifId;
+	private String customerId;
+	private String message;
+	private boolean status;
+	private String createdTime;
+	public Notification(int notifId, String customerId, String message, boolean status, String createdTime) {
 		super();
 		this.notifId = notifId;
 		this.customerId = customerId;
@@ -20,10 +20,10 @@ public class Notification {
 	public void setNotifId(int notifId) {
 		this.notifId = notifId;
 	}
-	public int getCustomerId() {
+	public String getCustomerId() {
 		return customerId;
 	}
-	public void setCustomerId(int customerId) {
+	public void setCustomerId(String customerId) {
 		this.customerId = customerId;
 	}
 	public String getMessage() {

@@ -1,14 +1,14 @@
 package model;
 
 public class User {
-	int id;
-	String name;
-	String email;
-	String password;
-	String gender;
-	String dob;
-	String role;
-	public User(int id, String name, String email, String password, String gender, String dob, String role) {
+	private String id;
+	private String name;
+	private String email;
+	private String password;
+	private String gender;
+	private String dob;
+	private String role;
+	public User(String id, String name, String email, String password, String gender, String dob, String role) {
 		super();
 		this.id = id;
 		this.name = name;
@@ -18,10 +18,15 @@ public class User {
 		this.dob = dob;
 		this.role = role;
 	}
-	public int getId() {
+	public User(String id, String name) {
+		super();
+		this.id = id;
+		this.name = name;
+	}
+	public String getId() {
 		return id;
 	}
-	public void setId(int id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 	public String getName() {

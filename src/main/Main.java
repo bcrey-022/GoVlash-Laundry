@@ -1,5 +1,8 @@
 package main;
 
+import javafx.application.Application;
+import view.LoginView;
+
 public class Main {
 
 	public Main() {
@@ -7,8 +10,7 @@ public class Main {
 	}
 
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-
+		Application.launch(LoginView.class, args);
 	}
 
 }

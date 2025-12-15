@@ -1,11 +1,11 @@
 package model;
 
 public class Service {
-	int id;
-	String name;
-	String description;
-	int price;
-	int duration;
+	private int id;
+	private String name;
+	private String description;
+	private int price;
+	private int duration;
 	public Service(int id, String name, String description, int price, int duration) {
 		super();
 		this.id = id;
@@ -13,6 +13,11 @@ public class Service {
 		this.description = description;
 		this.price = price;
 		this.duration = duration;
+	}
+	public Service(int id, String name) {
+		super();
+		this.id = id;
+		this.name = name;
 	}
 	public int getId() {
 		return id;
@@ -44,4 +49,8 @@ public class Service {
 	public void setDuration(int duration) {
 		this.duration = duration;
 	}
+	@Override
+    public String toString() {
+        return name;
+    }
 }

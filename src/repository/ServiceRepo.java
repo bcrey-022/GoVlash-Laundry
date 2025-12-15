@@ -15,7 +15,7 @@ public class ServiceRepo {
 		con = Connect.getInstance().getConnection();
 	}
 	
-	public void insertNewService(Service service) {
+	public boolean insertNewService(Service service) {
 		String query = "INSERT INTO service(serviceId, serviceName, serviceDescription, servicePrice, serviceDuration) VALUES (?, ?, ?, ?, ?)";
 		try (PreparedStatement ps = con.prepareStatement(query)){
 			ps.setInt(1, service.getId());
@@ -23,9 +23,10 @@ public class ServiceRepo {
 			ps.setString(3, service.getDescription());
 			ps.setInt(4, service.getPrice());
 			ps.setInt(5, service.getDuration());
-			ps.executeUpdate();
+			return ps.executeUpdate() > 0;
 		} catch (Exception e) {
 			e.printStackTrace();
+			return false;
 		}
 	}
 	
@@ -36,6 +37,20 @@ public class ServiceRepo {
 			ResultSet rs = ps.executeQuery();
 			while(rs.next()) {
 				services.add(new Service(rs.getInt("serviceId"), rs.getString("serviceName"), rs.getString("serviceDescription"), rs.getInt("servicePrice"), rs.getInt("serviceDuration")));
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return services;
+	}
+	
+	public List<Service> getAllServiceName(){
+		List<Service> services = new ArrayList<>();
+		String query = "SELECT serviceId, serviceName FROM service";
+		try (PreparedStatement ps = con.prepareStatement(query)){
+			ResultSet rs = ps.executeQuery();
+			while(rs.next()) {
+				services.add(new Service(rs.getInt("serviceId"), rs.getString("serviceName")));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -62,6 +77,7 @@ public class ServiceRepo {
 			ps.setString(2, description);
 			ps.setInt(3, price);
 			ps.setInt(4, duration);
+			ps.setInt(5, id);
 			int row = ps.executeUpdate();
 			return row > 0;
 		} catch (Exception e) {
