@@ -65,7 +65,7 @@ public class CustomerOrderView {
 			txtWeight.clear();
 		});
 		StackPane sp = new StackPane();
-		sp.getChildren().addAll(title, gp, btnSubmit, lblMessage);
+		sp.getChildren().addAll(title, gp, lblMessage, btnSubmit);
 		return sp;
 	}
 

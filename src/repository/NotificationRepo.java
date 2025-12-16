@@ -22,13 +22,12 @@ public class NotificationRepo {
 	public boolean addNewNotification(Notification notif) {
 		String query = "INSERT INTO notification(notificationId, customerId, message, status, createdTime) VALUES (?, ?, ?, ?, ?)";
 		try (PreparedStatement ps = con.prepareStatement(query)){
-			DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-			LocalDate ld = LocalDate.parse(notif.getCreatedTime(), fmt);
+			LocalDate date = LocalDate.parse(notif.getCreatedTime());
 			ps.setInt(1, notif.getNotifId());
 			ps.setString(2, notif.getCustomerId());
 			ps.setString(3, notif.getMessage());
 			ps.setBoolean(4, notif.isStatus());
-			ps.setDate(5, java.sql.Date.valueOf(ld));
+			ps.setDate(5, java.sql.Date.valueOf(date));
 			return ps.executeUpdate() > 0;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -99,7 +98,7 @@ public class NotificationRepo {
 			ps.setString(1, userId);
 			ResultSet rs = ps.executeQuery();
 			while(rs.next()) {
-				notifs.add(new Notification(rs.getInt("notifId"), rs.getString("customerId"), rs.getString("message"), rs.getBoolean("status"), rs.getDate("createdTime").toString()));
+				notifs.add(new Notification(rs.getInt("notificationId"), rs.getString("message")));
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -109,28 +108,28 @@ public class NotificationRepo {
 	}
 	
 	public Notification getNotificationDetail(int notifId){
-		List<Notification> notifs = new ArrayList<>();
-		String query = "SELECT notificationId, message, status, createdTime FROM notification where notificationId = ?";
+		Notification notifs = null;
+		String query = "SELECT notificationId, customerId, message, status, createdTime FROM notification where notificationId = ?";
 		try (PreparedStatement ps = con.prepareStatement(query)){
 			ps.setInt(1, notifId);
 			ResultSet rs = ps.executeQuery();			
 			while(rs.next()) {
-				notifs.add(new Notification(rs.getInt("notifId"), rs.getString("customerId"), rs.getString("message"), rs.getBoolean("status"), rs.getDate("createdTime").toString()));
+				notifs = new Notification(rs.getInt("notificationId"), rs.getString("customerId"), rs.getString("message"), rs.getBoolean("status"), rs.getDate("createdTime").toString());
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return (Notification) notifs;
+		return notifs;
 	}
 	
 	public List<Notification> getFinishedNotification(String custId){
 		List<Notification> notifs = new ArrayList<>();
-		String query = "SELECT notificationId, message, status, createdTime FROM notification where customerId = ? AND status = true";
+		String query = "SELECT notificationId, customerId, message, status, createdTime FROM notification where customerId = ? AND status = true";
 		try (PreparedStatement ps = con.prepareStatement(query)){
 			ps.setString(1, custId);
 			ResultSet rs = ps.executeQuery();
 			while(rs.next()) {
-				notifs.add(new Notification(rs.getInt("notifId"), rs.getString("customerId"), rs.getString("message"), rs.getBoolean("status"), rs.getDate("createdTime").toString()));
+				notifs.add(new Notification(rs.getInt("notificationId"), rs.getString("customerId"), rs.getString("message"), rs.getBoolean("status"), rs.getDate("createdTime").toString()));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

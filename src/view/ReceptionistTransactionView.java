@@ -2,16 +2,12 @@ package view;
 
 import java.util.List;
 
-import controller.NotificationController;
 import controller.TransactionController;
 import controller.UserController;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.collections.transformation.FilteredList;
 import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
+import javafx.scene.layout.HBox;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -41,38 +37,54 @@ public class ReceptionistTransactionView {
 		weightCol.setCellValueFactory(new PropertyValueFactory<>("weight"));
 		statusCol.setCellValueFactory(new PropertyValueFactory<>("status"));
 		noteCol.setCellValueFactory(new PropertyValueFactory<>("notes"));
-		ComboBox<User> cbLs = new ComboBox<>();
-    	cbLs.getItems().addAll(uc.getLaundryStaff());
 		assignCol.setCellFactory(col -> new TableCell<>() {
-            private final Button btn = new Button("Assign Order to Laundry Staff");        
-            {
-                btn.setOnAction(e -> {
-                	Transaction t = getTableView().getItems().get(getIndex());
-                	cbLs.setVisible(true);
-                	cbLs.setManaged(true);
-                	User getLS = cbLs.getValue();
-                	Button submit = new Button("Assign");
-                	submit.setOnAction(f ->{
-                		boolean success1 = tc.assignStaffAndSave(t.getTransactionId(), currentUser, getLS);
-                    	if(success1) {
-                    		boolean success2 = tc.updateStatus(idCol.getText(), "Send To Laundry Staff");
-                    		if(success2) {
-                    			table.getItems().setAll(tc.viewPendingTransaction());
-                    			cbLs.setVisible(false);
-                    			cbLs.setManaged(false);
-                    		}
-                    	}
-                	});                	
-                });
-            }
+		    private final Button btnAssign = new Button("Assign");
+		    private final ComboBox<User> cbLs = new ComboBox<>();
+		    private final Button btnSubmit = new Button("Submit");
+		    private final HBox assignBox = new HBox(15, cbLs, btnSubmit);
+		    {
+		        cbLs.getItems().setAll(uc.getLaundryStaff());
+		        assignBox.setVisible(false);
+		        assignBox.setManaged(false);
+		        btnAssign.setOnAction(e -> {
+		            btnAssign.setVisible(false);
+		            btnAssign.setManaged(false);
 
-            @Override
-            protected void updateItem(Void item, boolean empty) {
-                super.updateItem(item, empty);
-                setGraphic(empty ? null : btn);
-            }
-        });
+		            assignBox.setVisible(true);
+		            assignBox.setManaged(true);
+		        });
+		        btnSubmit.setOnAction(e -> {
+		            Transaction t = getTableView().getItems().get(getIndex());
+		            String tempId = t.getTransactionId();
+		            User staff = cbLs.getValue();
+		            if (staff == null) {
+		                System.out.println("Select laundry staff first!");
+		                return;
+		            }
+		            boolean success = tc.assignStaff(tempId, currentUser, staff);
+		            if (success) {
+		                setGraphic(null);
+		                table.getItems().setAll(tc.getTempTransaction());
+		            }
+		        });
+		    }
+		    @Override
+		    protected void updateItem(Void item, boolean empty) {
+		        super.updateItem(item, empty);
+		        if (empty) {
+		            setGraphic(null);
+		            return;
+		        }
+		        btnAssign.setVisible(true);
+		        btnAssign.setManaged(true);
+
+		        assignBox.setVisible(false);
+		        assignBox.setManaged(false);
+		        setGraphic(new HBox(5, btnAssign, assignBox));
+		    }
+		});
 		table.getColumns().addAll(idCol, serviceCol, customerCol, dateCol, statusCol, weightCol, noteCol, assignCol);
+		table.getItems().setAll(tc.getTempTransaction());
 		StackPane sp = new StackPane(table);
 		return sp;
 	}

@@ -8,6 +8,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.StackPane;
@@ -35,7 +36,10 @@ public class LaundryStaffTransactionView {
 		idCol.setCellValueFactory(new PropertyValueFactory<>("transactionId"));
 		serviceCol.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getService().getName()));
 		customerCol.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getCustomer().getId()));
-		receptionistCol.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getReceptionist().getName()));
+		receptionistCol.setCellValueFactory(data -> {
+			User r = data.getValue().getReceptionist();
+		    return new SimpleStringProperty(r == null ? "-" : r.getName());
+		});
 		dateCol.setCellValueFactory(new PropertyValueFactory<>("date"));
 		weightCol.setCellValueFactory(new PropertyValueFactory<>("weight"));
 		statusCol.setCellValueFactory(new PropertyValueFactory<>("status"));
@@ -44,7 +48,8 @@ public class LaundryStaffTransactionView {
             private final Button btn = new Button("Do the Order");        
             {
                 btn.setOnAction(e -> {
-                	Transaction t = getTableView().getItems().get(getIndex());
+                	Transaction t = getTableRow().getItem();
+                	if(t == null) return;
                 	boolean success = tc.updateStatus(t.getTransactionId(), "Washing");
                 	if(success) {
                 		getTableView().getItems().setAll(tc.viewLSTransaction());
@@ -56,23 +61,32 @@ public class LaundryStaffTransactionView {
             @Override
             protected void updateItem(Void item, boolean empty) {
                 super.updateItem(item, empty);
-                if (empty || getTableRow().getItem() == null) {
+                if (empty) {
                     setGraphic(null);
                     return;
                 }
-                Transaction t = getTableRow().getItem();
-                btn.setDisable(!"Assigned".equals(t.getStatus()));
-                setGraphic(btn);
+                TableRow<Transaction> row = getTableRow();
+                if (row == null) {
+                    setGraphic(null);
+                    return;
+                }
+                Transaction t = row.getItem();
+                if (t == null || !"Pending".equals(t.getStatus())) {
+                    setGraphic(null);
+                } else {
+                    setGraphic(btn);
+                }
             }
         });
 		markCol.setCellFactory(cols -> new TableCell<>() {
 			private final Button btn = new Button("Mark As Finished");
 			{
 				btn.setOnAction(f -> {
-					Transaction t = getTableView().getItems().get(getIndex());
+					Transaction t = getTableRow().getItem();
+					if(t == null) return;
 					boolean success = tc.updateStatus(t.getTransactionId(), "Finished");
 					if(success) {
-						getTableView().getItems().setAll(tc.viewLSTransaction());
+						table.getItems().setAll(tc.viewLSTransaction());
 						lblMessage.setText("Transaction marked as finished");
 					}
 				});
@@ -80,17 +94,25 @@ public class LaundryStaffTransactionView {
 			@Override
             protected void updateItem(Void item, boolean empty) {
                 super.updateItem(item, empty);
-                if (empty || getTableRow().getItem() == null) {
+                if (empty) {
                     setGraphic(null);
                     return;
                 }
-                Transaction t = getTableRow().getItem();
-                btn.setDisable(!"Washing".equals(t.getStatus()));
-                setGraphic(btn);
+                TableRow<Transaction> row = getTableRow();
+                if (row == null) {
+                    setGraphic(null);
+                    return;
+                }
+                Transaction t = row.getItem();
+                if (t == null || !"Washing".equals(t.getStatus())) {
+                    setGraphic(null);
+                } else {
+                    setGraphic(btn);
+                }
             }
 		});
-		
 		table.getColumns().addAll(idCol, serviceCol, customerCol, receptionistCol, dateCol, statusCol, weightCol, noteCol, doCol, markCol);
+		table.getItems().setAll(tc.viewLSTransaction());
 		VBox root = new VBox(10, table, lblMessage);
 		StackPane sp = new StackPane(root);
 		return sp;

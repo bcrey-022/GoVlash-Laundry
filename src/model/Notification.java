@@ -14,6 +14,11 @@ public class Notification {
 		this.status = status;
 		this.createdTime = createdTime;
 	}
+	public Notification(int notifId, String message) {
+		super();
+		this.notifId = notifId;
+		this.message = message;
+	}
 	public int getNotifId() {
 		return notifId;
 	}

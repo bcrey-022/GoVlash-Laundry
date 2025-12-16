@@ -50,6 +50,7 @@ public class ReceptionistDashboardView extends Application{
 		Button btnLogout = new Button("Logout");
 		btnHome.setOnAction(e -> loadHomePage());
 		btnView.setOnAction(e -> loadViewPage());
+		btnProfile.setOnAction(e -> loadProfilePage());
 		btnLogout.setOnAction(e -> {
 			LoginView lv = new LoginView();
 			try {
@@ -69,6 +70,10 @@ public class ReceptionistDashboardView extends Application{
 		navbar.setStyle("-fx-background-color: #000080; -fx-padding: 12 20;");
 		return navbar;
 	}
+	private void loadProfilePage() {
+		content.getChildren().setAll(ProfileView.create(currentUser));
+	}
+
 	private void loadViewPage() {
 		content.getChildren().setAll(ReceptionistTransactionView.create(currentUser));
 	}

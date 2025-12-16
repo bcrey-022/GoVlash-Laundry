@@ -66,15 +66,37 @@ public class LoginView extends Application {
 					}
                 }
                 else if(email.endsWith("@govlash.com")) {
-                	AdminDashboardView adv = new AdminDashboardView(current);
-                	try {
-						adv.start(new Stage());
-						((Stage) btnLogin.getScene().getWindow()).close();
-					} catch (Exception e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-						return;
-					}
+                	if(current.getRole().equals("Admin")) {
+                		AdminDashboardView adv = new AdminDashboardView(current);
+                    	try {
+    						adv.start(new Stage());
+    						((Stage) btnLogin.getScene().getWindow()).close();
+    					} catch (Exception e1) {
+    						// TODO Auto-generated catch block
+    						e1.printStackTrace();
+    						return;
+    					}
+                	}
+                	else if(current.getRole().equals("Receptionist")) {
+                		ReceptionistDashboardView rdv = new ReceptionistDashboardView(current);
+                		try {
+							rdv.start(new Stage());
+							((Stage) btnLogin.getScene().getWindow()).close();
+						} catch (Exception e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+                	}
+                	else if(current.getRole().equals("Laundry Staff")) {
+                		LaundryStaffDashboardView ldv = new LaundryStaffDashboardView(current);
+                		try {
+							ldv.start(new Stage());
+							((Stage) btnLogin.getScene().getWindow()).close();
+						} catch (Exception e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+                	}
                 }
             } else {
                 lblMessage.setText(auth.getMessage());

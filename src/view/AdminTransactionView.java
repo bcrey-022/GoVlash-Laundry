@@ -8,9 +8,9 @@ import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
-import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.StackPane;
@@ -44,26 +44,47 @@ public class AdminTransactionView {
 		sendNotifCol.setCellFactory(col -> new TableCell<>() {
             private final Button btn = new Button("Send Notification");        
             {
-            	if(statusCol.getText().equals("Ready to Pick Up")) {
-            		btn.setVisible(true);
-                    btn.setManaged(true);
-            	}
-            	else {
-            		btn.setVisible(false);
-                    btn.setManaged(false);
-            	}
                 btn.setOnAction(e -> {
-                   nc.addNewNotification(customerCol.getText(), idCol.getText());
-                   nc.sendNotification(customerCol.getText());
-                   btn.setVisible(false);
-                   btn.setManaged(false);
+                	Transaction t = getTableRow().getItem();
+                    if (t == null) return;
+                    String customerId = t.getCustomer().getId();
+                    String transactionId = t.getTransactionId();
+                    nc.addNewNotification(customerId, transactionId);
+                    nc.sendNotification(customerId);
+                    btn.setVisible(false);
+                    btn.setManaged(false);
                 });
             }
 
             @Override
             protected void updateItem(Void item, boolean empty) {
                 super.updateItem(item, empty);
-                setGraphic(empty ? null : btn);
+                if (empty) {
+                    setGraphic(null);
+                    return;
+                }
+
+                TableRow<Transaction> row = getTableRow();
+                if (row == null) {
+                    setGraphic(null);
+                    return;
+                }
+
+                Transaction t = row.getItem();
+                if (t == null) {
+                    setGraphic(null);
+                    return;
+                }
+
+                if ("Finished".equals(t.getStatus())) {
+                    btn.setVisible(true);
+                    btn.setManaged(true);
+                    setGraphic(btn);
+                } else {
+                    btn.setVisible(false);
+                    btn.setManaged(false);
+                    setGraphic(null);
+                }
             }
         });
 		table.getColumns().addAll(idCol, serviceCol, customerCol, receptionistCol, laundryStaffCol, dateCol, statusCol, weightCol, noteCol, sendNotifCol);

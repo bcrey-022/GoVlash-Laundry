@@ -23,9 +23,11 @@ public class AuthController {
 		User user = userRepo.findEmail(email);
 		if (user == null) {
 			message = "Email not registered!";
+			return null;
 		}
 		if (!user.getPassword().equals(password)) {
 			message = "Password not match!";
+			return null;
 		}
 		message = "Success";
 	    return user;

@@ -38,8 +38,9 @@ public class UserRepo {
 	}
 	
 	public String findLastID(String prefix) {
-		String query = "SELECT userId FROM users ORDER BY userId DESC LIMIT 1";
+		String query = "SELECT userId FROM users WHERE userId LIKE ? ORDER BY userId DESC LIMIT 1";
 		try (PreparedStatement ps = con.prepareStatement(query);){
+			ps.setString(1, prefix + "%");
 			ResultSet rs = ps.executeQuery();
 			if(rs.next()) {
 				String lastId = rs.getString("userId");
@@ -99,7 +100,7 @@ public class UserRepo {
 	
 	public List<User> getLaundryStaff(){
 		List<User> users = new ArrayList<>();
-		String query = "SELECT userId, userName FROM users WHERE users.userRole == 'Laundry Staff'";
+		String query = "SELECT userId, userName FROM users WHERE users.userRole = 'Laundry Staff'";
 		try (PreparedStatement ps = con.prepareStatement(query)){
 			ResultSet rs = ps.executeQuery();
 			while(rs.next()) {
